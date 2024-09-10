@@ -1,6 +1,6 @@
-<h1>WELCOME TO GATAL.IO !!!</h1>
+{% load static %}
+<h1 align="center">WELCOME TO GATAL.IO !!!</h1>
+<p align="center"> <img src="{% static 'Logo.jpg' %}" width="150"></p>
 
-<h5>Name: </h5>
-<p>{{ name }}</p>
-<h5>Class: </h5>
-<p>{{ class }}</p>
+<h5>Name: {{ name }}</h5>
+<h5>Class: {{ class }}</h5>
