@@ -152,4 +152,48 @@ Gatal.io adalah salah satu platform _e-commerce_ Indonesia untuk menjual barang-
         ```bash
         git push pws main:master
         ```
-<h5 align="center">==========================================================</h5>
+
+<h5 align="center">==========================================================
+</h5>
+
+<h3 align="center">
+Bagan <i>Request User</i> ke <i>Web</i> Aplikasi berbasis Django
+</h3>
+
+<p align="center"> 
+    <img src="asset/img/MVT.jpg">
+</p>
+
+Request dari user akan diproses terlebih dahulu sehingga dapat diteruskan ke View yang sesuai. kemudian View tersebut akan membaca/menulis data di Model dan menggunakan Template yang sesuai untuk menampilkan dan mengembalikan response ke user.
+
+<h5 align="center">==========================================================
+</h5>
+
+### Fungsi git dalam pengembangan perangkat lunak
+1. **Versi Kontrol:** Git memungkinkan pengembang melacak perubahan kode sumber dari waktu ke waktu. Setiap perubahan disimpan sebagai versi (_commit_), sehingga mudah untuk kembali ke versi sebelumnya jika diperlukan.
+
+2. **Kolaborasi Tim:** Dengan Git, banyak pengembang dapat bekerja secara bersamaan di proyek yang sama tanpa saling mengganggu pekerjaan satu sama lain. _Branching_ (pembuatan cabang) mempermudah pekerjaan di fitur yang berbeda sebelum digabungkan (_merged_) ke cabang utama.
+
+3. **Pemecahan Konflik:** Git memudahkan deteksi dan resolusi konflik kode ketika dua atau lebih pengembang mengedit file yang sama.
+
+4. **Backup & Repositori Terdistribusi:** Git menyimpan salinan lengkap dari repositori di setiap mesin yang menggunakannya, sehingga kode aman jika server pusat tidak dapat diakses atau hilang.
+
+5. **Branching dan Merging:** Git memungkinkan pembuatan cabang (_branch_) untuk pengembangan fitur baru atau eksperimen tanpa mempengaruhi kode utama. Setelah diuji, perubahan dari cabang ini bisa digabungkan (_merge_) ke cabang utama.
+
+<h5 align="center">==========================================================
+</h5>
+
+### Mengapa framework Django dijadikan permulaan pembelajaran pengembangan perangkat lunak?
+
+1. Django menggunakan Python yang mudah dipahami, cocok untuk pemula.
+2. Banyak fitur bawaan yang langsung siap digunakan tanpa konfigurasi tambahan.
+3. Arsitektur Model-View-Template (MVT) membantu pemula memahami struktur kode yang baik.
+4. Dokumentasi yang lengkap dan mudah diikuti memudahkan pembelajaran.
+5. Komunitas besar dan aktif menyediakan banyak sumber belajar dan bantuan.
+
+<h5 align="center">==========================================================
+</h5>
+
+### Mengapa model pada Django disebut sebagai ORM?
+
+Model pada Django disebut sebagai **ORM** (Object-Relational Mapping) karena berfungsi sebagai penghubung antara objek Python dan tabel dalam database relasional. Dengan ORM, pengembang dapat berinteraksi dengan database menggunakan kode Python tanpa harus menulis query SQL secara langsung. Setiap model merepresentasikan tabel dalam database, di mana kolom menjadi atribut objek Python. ORM memudahkan operasi seperti insert, update, dan query data, serta memungkinkan otomatisasi manajemen skema database dan mendukung berbagai jenis database. Selain itu, ORM juga menangani relasi antar tabel dengan mudah, menjadikan pengelolaan data lebih intuitif dan aman.
