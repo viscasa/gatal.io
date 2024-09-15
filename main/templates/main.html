@@ -1,6 +1,41 @@
+{% extends 'base.html' %}
 {% load static %}
+{% block content %}
+
 <h1 align="center">WELCOME TO GATAL.IO !!</h1>
 <p align="center"> <img src="{% static 'Logo.jpg' %}" width="150"></p>
 
 <h5>Name: {{ name }}</h5>
 <h5>Class: {{ class }}</h5>
+
+{% if not product_entries %}
+<p>Belum ada data game pada gatal.io.</p>
+{% else %}
+<table>
+    <tr>
+        <th>Game Name</th>
+        <th>Time</th>
+        <th>Genre</th>
+        <th>Description</th>
+        <th>Price</th>
+    </tr>
+
+    {% for product_entry in product_entries %}
+    <tr>
+        <td>{{product_entry.name}}</td>
+        <td>{{product_entry.time}}</td>
+        <td>{{product_entry.genre}}</td>
+        <td>{{product_entry.description}}</td>
+        <td>{{product_entry.price}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_product_entry' %}">
+  <button>Add New Game</button>
+</a>
+
+{% endblock content %}
