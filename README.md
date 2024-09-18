@@ -382,5 +382,5 @@ Fungsi `csrf_token` pada pembuatan form di Django adalah untuk melindungi aplika
 
 4. **XML by ID**
 <p align="center"> 
-    <img src="asset/img/XMLbyID.png">
+    <img src="asset/img/XMLbyid.png">
 </p>
