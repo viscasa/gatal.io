@@ -559,3 +559,213 @@ Selain mengingat login pengguna, cookies juga dapat digunakan untuk menyimpan pr
     <h5>Sesi terakhir login: {{ last_login }}</h5>
     ...
     ```
+
+# Tugas 5
+
+### Urutan prioritas pengambilan CSS selector.
+Ketika terdapat lebih dari satu style yang didefinisikan untuk elemen HTML, browser akan menerapkan style yang memiliki prioritas paling tinggi. Berikut ini adalah urutan prioritasnya dari yang paling tinggi hingga paling rendah:
+1. *Inline Style*: Style yang ditulis langsung pada elemen HTML menggunakan atribut `style`. Karena didefinisikan langsung pada elemen, inline style memiliki prioritas tertinggi. Contoh:
+    ```html
+    <p style="color: red;">Teks ini berwarna merah.</p>
+    ```
+2. *Internal dan External Style Sheets*: Style yang didefinisikan di dalam tag `<style>` pada bagian `<head>` dokumen HTML (internal) atau dalam file CSS terpisah yang di-link ke dokumen HTML (external). Kedua style ini memiliki prioritas di bawah inline style. Contoh:
+    ```html
+    {%comment%} Internal {%endcomment%}
+    <style>
+    p {
+        color: blue;
+    }
+    </style>
+
+    {%comment%} External {%endcomment%}
+    <link rel="stylesheet" href="styles.css">
+    ```
+3. *Browser Default*: Jika tidak ada style lain yang diterapkan, browser akan menggunakan style default. Ini adalah style bawaan yang diterapkan oleh browser ketika tidak ada style khusus yang didefinisikan oleh pengguna atau pengembang. Contoh:
+    ```html
+    <p>Teks ini menggunakan style default browser.</p>
+    ```
+Dengan urutan prioritas ini, *inline style* akan selalu diterapkan jika ada, meskipun external atau internal style mendefinisikan aturan yang sama. Jika tidak ada inline style, *internal atau external stylesheets* akan diterapkan, dan jika keduanya tidak ada, barulah *browser default* yang digunakan.
+
+- - - -
+
+### _Responsive design_ sebagai konsep yang penting dalam pengembangan aplikasi web.
+Responsive design menjadi penting dalam pengembangan aplikasi web karena memungkinkan situs beradaptasi dengan berbagai ukuran layar perangkat, seperti smartphone, tablet, dan desktop, sehingga memberikan pengalaman pengguna yang optimal tanpa perlu membuat versi terpisah untuk setiap perangkat. Hal ini juga meningkatkan aksesibilitas, efisiensi biaya, serta mendukung SEO (_Search Engine Optimization_) karena mesin pencari lebih menyukai situs yang responsif.
+
+* Contoh aplikasi dengan _responsive design_: X, Scele, Discord, dll.
+* Contoh aplikasi yang belum menerapkannya : Pacil Web Server, aren.cs.ui.ac.id/sda/ , dll.
+
+- - - -
+
+### Perbedaan antara _margin, border, dan padding_, serta cara untuk mengimplementasikan ketiga hal tersebut.
+**Margin**, **border**, dan **padding**adalah tiga properti CSS yang digunakan untuk mengatur ruang dan tampilan elemen di dalam halaman web, tetapi mereka memiliki fungsi yang berbeda.
+
+1. **Margin**: Ini adalah ruang di luar elemen, yang digunakan untuk memberi jarak antara elemen satu dengan yang lain. Margin bersifat eksternal dan tidak mempengaruhi ukuran elemen itu sendiri. Contoh:
+    ```html
+    div {
+        margin: 20px;
+    }
+    ```
+
+2. **Border**: Border adalah garis yang mengelilingi elemen. Border berada di antara margin dan padding, dan dapat dikustomisasi dalam hal warna, lebar, dan gaya (seperti solid, dashed, atau dotted). Contoh:
+    ```html
+    div {
+        border: 2px solid black;
+    }
+    ```
+
+3. **Padding**: Padding adalah ruang di dalam elemen, antara konten elemen dan border-nya. Padding digunakan untuk memberi jarak antara konten elemen dan tepi elemen itu sendiri. Contoh:
+    ```html
+    div {
+        padding: 15px;
+    }
+    ```
+
+- - - -
+
+### _Flex box_ dan _grid layout_ serta kegunaannya.
+1. Flexbox (Flexible Box Layout)
+
+    Flexbox adalah sistem layout yang digunakan untuk menyusun elemen dalam satu dimensi, baik itu secara horizontal (row) atau vertikal (column). Flexbox sangat berguna untuk mendistribusikan ruang di antara elemen dan menyelaraskan elemen dalam satu baris atau kolom dengan fleksibilitas yang lebih dinamis.
+
+    Kegunaan Flexbox:
+    * Membuat tata letak yang fleksibel, baik horizontal maupun vertikal.
+    * Mengatur elemen untuk menyesuaikan ruang yang tersedia secara otomatis.
+    * Mempermudah pembuatan layout yang responsif tanpa perlu menggunakan float atau positioning.
+    * Mengontrol alignment (penyelarasan) dan distribusi elemen dalam container secara efisien.
+
+    Contoh:
+    ```html
+    .container {
+        display: flex;
+        justify-content: space-between; /* Mengatur jarak antar item */
+        align-items: center; /* Menyelaraskan item di sepanjang garis tengah */
+    }
+    ```
+
+2. Grid Layout
+
+    CSS Grid Layout adalah sistem layout dua dimensi yang lebih kuat, yang memungkinkan pengembang untuk mengatur elemen baik secara horizontal (baris) maupun vertikal (kolom). Grid memberikan kontrol lebih baik atas struktur kompleks yang terdiri dari baris dan kolom, sehingga memudahkan dalam membuat tata letak yang lebih rumit.
+
+    Kegunaan Grid Layout:
+    * Membuat tata letak dua dimensi (baris dan kolom) dengan mudah.
+    * Menyusun tata letak yang lebih terstruktur dan kompleks, seperti dashboard, galeri, atau halaman web dengan layout berbasis grid.
+    * Mengontrol ukuran elemen dalam grid dan bagaimana elemen tersebut merespons perubahan ukuran layar.
+
+    Contoh:
+    ```html
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 2fr; /* Membagi layout dalam dua kolom */
+        grid-template-rows: auto;
+        gap: 10px; /* Jarak antar elemen grid */
+    }
+    ```
+
+- - - -
+
+### Proses mengimplementasikan fungsi untuk menghapus dan mengedit product hingga membuat _navigation bar_.
+
+- [x] Implementasikan fungsi untuk menghapus dan mengedit product.
+1. Menambahkan dua method baru pada `views.py`, yaitu:
+    ```python
+    def edit_product(request, id):
+        # Get product entry berdasarkan id
+        product = Product.objects.get(pk = id)
+
+        # Set product entry sebagai instance dari form
+        form = ProductForm(request.POST or None, instance=product)
+
+        if form.is_valid() and request.method == "POST":
+            # Simpan form dan kembali ke halaman awal
+            form.save()
+            return HttpResponseRedirect(reverse('main:show_main'))
+
+        context = {'form': form}
+        return render(request, "edit_product.html", context)
+
+    def delete_product(request, id):
+        # Get product berdasarkan id
+        product = Product.objects.get(pk = id)
+        # Hapus product
+        product.delete()
+        # Kembali ke halaman awal
+        return HttpResponseRedirect(reverse('main:show_main'))
+    ```
+2. Menambahkan import di `urls.py` serta lakukan routing sebagai berikut :
+    ```python
+    from main.views import ..., edit_product, delete_product
+    urlpatterns = [
+        . . .
+        path('edit-product/<uuid:id>', edit_product, name='edit_product'),
+        path('delete/<uuid:id>', delete_product, name='delete_product'),
+        . . .
+    ]
+    ```
+
+- - - -
+
+- [x] Kustomisasi desain pada template HTML yang telah dibuat pada tugas-tugas sebelumnya menggunakan CSS atau CSS framework (seperti Bootstrap, Tailwind, Bulma).
+
+1. Menyambungkan template Django dengan tailwind, dengan cara menambahkan script tailwind berikut:
+    ```html
+    <script src="https://cdn.tailwindcss.com">
+    ```
+2. Membuat folder `static` sebagai tempat penyimpanan asset, seperti gambar, css, dll.
+3. Lakukan konfigurasi static dengan cara menambahkan _middleware_ WhiteNoise dan ubah variabel `STATIC_ROOT`, `STATICFILES_DIRS`, dan `STATIC_URL` sebagai berikut:
+    ```python
+    ...
+    MIDDLEWARE = [
+        'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware', #Tambahkan tepat di bawah SecurityMiddleware
+        ...
+    ]
+    ...
+    STATIC_URL = '/static/'
+    if DEBUG:
+        STATICFILES_DIRS = [
+            BASE_DIR / 'static' # merujuk ke /static root project pada mode development
+        ]
+    else:
+        STATIC_ROOT = BASE_DIR / 'static' # merujuk ke /static root project pada mode production
+    ...
+    ```
+4. Mengkustomisasi setiap laman pada `main/templates` dengan CSS dan Tailwind.
+5. Pada laman `main.html`, cek apakah sudah ada produk yang terdaftar. Jika belum, munculkan gambar dan pesan bahwa produk belum terdaftar:
+    ```html
+    {% if not product_entries %}
+        <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+            <img src="{% static 'image/not_found.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+            <p class="text-center text-white mt-4">Belum ada data product pada GATAL.IO.</p>
+        </div>
+    ```
+
+6. Buat card product untuk menampilkan product yang ada. Pada `main.html`, tambahkan kode berikut setelah mengecek apakah produk tersedia:
+    ```html
+    {% else %}
+        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+            {% for product_entry in product_entries %}
+                {% include 'card_product.html' with product_entry=product_entry %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    ```
+    Lalu, buat template baru pada folder `template` yaitu `card_product.html` yang berisikan kode untuk menampilkan tiap atribut pada sebuah produk.
+
+7. Membuat navigation bar dengan cara membuat template baru yaitu `navbar.html` lalu tautkan navigation bar tersebut ke laman yang diinginkan dengan menggunakan tags `include`:
+    ```html
+    {% extends 'base.html' %}
+    {% block content %}
+    {% include 'navbar.html' %}
+    ...
+    {% endblock content%}
+    ```
+
+8. Agar navigation bar responsive terhadap ukuran device, bagi kode `navbar.html` menjadi dua tag `<div>` sebagai berikut:
+```html
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        ...
+    </div>
+    <div class="mobile-menu hidden md:hidden  px-4 w-full md:max-w-full">
+        ...
+    </div>
+```
