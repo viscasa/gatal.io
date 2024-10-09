@@ -769,3 +769,263 @@ Responsive design menjadi penting dalam pengembangan aplikasi web karena memungk
         ...
     </div>
 ```
+
+# Tugas 6
+
+### Manfaat dari Penggunaan JavaScript dalam Pengembangan Aplikasi Web
+JavaScript sangat bermanfaat dalam pengembangan aplikasi web karena memungkinkan pembuatan halaman yang interaktif dan dinamis. Bahasa ini berjalan di sisi klien, sehingga mempercepat respon aplikasi dan mengurangi beban server. Dengan kemampuan untuk memanipulasi elemen DOM secara real-time, JavaScript memungkinkan perubahan konten tanpa harus memuat ulang halaman (menggunakan AJAX).
+
+- - - -
+
+### Penggunaan `await` Ketika Menggunakan `fetch()`
+Fungsi dari penggunaan `await` ketika menggunakan `fetch()` adalah untuk menunggu hingga *promise* yang dihasilkan oleh `fetch()` selesai dan memberikan hasil, sebelum melanjutkan eksekusi kode berikutnya. `fetch()` mengembalikan sebuah *promise* yang berisi respons dari request yang dibuat, dan dengan menggunakan `await`, kita dapat memastikan bahwa variabel atau operasi berikutnya menggunakan hasil dari request yang sudah selesai.
+
+Jika kita tidak menggunakan `await`, eksekusi kode akan langsung berjalan tanpa menunggu selesainya proses fetch itu sendiri. Akibatnya, variabel yang seharusnya berisi hasil dari fetch mungkin berisi *promise* yang belum selesai, sehingga bisa menyebabkan hasil yang tidak diinginkan atau error ketika mencoba mengakses respons yang belum siap. Misalnya, jika kita mencoba memproses data yang dikembalikan oleh fetch sebelum *promise* tersebut selesai, akan terjadi ketidakcocokan data atau bahkan kegagalan dalam menjalankan logika selanjutnya.
+
+- - - -
+
+### Penggunaan Decorator `csrf_exempt` pada `view` -> AJAX `POST`
+Kita perlu menggunakan decorator `csrf_exempt` pada view yang akan digunakan untuk AJAX POST karena CSRF (Cross-Site Request Forgery) protection secara default diaktifkan dalam aplikasi Django untuk melindungi dari serangan CSRF. Serangan ini terjadi ketika sebuah situs web jahat mengirimkan request ke server yang sah atas nama pengguna yang sudah login, tanpa sepengetahuan pengguna tersebut.
+
+Ketika kita mengirim request POST melalui AJAX tanpa menyertakan token CSRF yang valid, server akan menolak request tersebut karena dianggap tidak aman. Namun, dalam beberapa kasus, seperti ketika request AJAX berasal dari sumber yang dapat dipercaya (misalnya internal API), kita mungkin ingin menonaktifkan pemeriksaan CSRF pada view tersebut. Dengan menggunakan `@csrf_exempt`, kita menginstruksikan Django untuk tidak memverifikasi token CSRF pada view tersebut, sehingga AJAX POST dapat diproses tanpa memerlukan token CSRF.
+
+- - - -
+
+### Pembersihan Data Input
+Pembersihan data input tidak boleh hanya dilakukan di frontend karena frontend dapat dimanipulasi oleh pengguna, membuat aplikasi rentan terhadap serangan seperti SQL injection atau XSS. Backend bertanggung jawab penuh atas pengelolaan dan penyimpanan data, sehingga harus memvalidasi dan membersihkan input untuk menjaga keamanan dan integritas data. Selain itu, backend sering diakses oleh berbagai klien, bukan hanya satu aplikasi frontend, sehingga validasi di backend memastikan konsistensi dan kontrol yang lebih ketat di seluruh sistem, menjamin perlindungan dari klien yang tidak sah.
+
+- - - -
+
+- [x] AJAX `GET`
+
+1. Ubah variable data untuk `show_json` dan `show_xml` pada `views.py` menjadi:
+    ```python
+    data = Product.objects.filter(user=request.user)
+    ```
+
+2. Ubah kode untuk menampilkan card pada `main.html` menjadi:
+    ```html
+    <div id="product_entry_cards"></div>
+    ```
+
+3. Buat fungsi pada javaScript di `main.html` untuk mengambil produk pengguna:
+    ```javaScript
+    async function getProductEntries(){
+        return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+    }
+    ```
+
+4. Buat fungsi pada javaScript di `main.html` untuk merefresh produk yang ada dan menampilkan cardnya:
+    ```javaScript
+    async function refreshProductEntries() {
+        document.getElementById("product_entry_cards").innerHTML = "";
+        document.getElementById("product_entry_cards").className = "";
+        const productEntries = await getProductEntries();
+        let htmlString = "";
+        let classNameString = "";
+
+        if (productEntries.length === 0) {
+            classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+            htmlString = `
+                <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+                    <img src="{% static 'image/not_found.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+                    <p class="text-center text-gray-600 mt-4">Belum ada data product pada GATAL.IO.</p>
+                </div>
+            `;
+        }
+        else {
+            classNameString = "columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full"
+            productEntries.forEach((item) => {
+                const name = DOMPurify.sanitize(item.fields.name);
+                const description = DOMPurify.sanitize(item.fields.description);
+                const genre = DOMPurify.sanitize(item.fields.genre);
+                const price = DOMPurify.sanitize(item.fields.price);
+                htmlString += `
+                <div class="relative break-inside-avoid">
+                <div class="absolute top-2 z-10 left-1/2 -translate-x-1/2 flex items-center -space-x-2">
+                    <div class="w-[3rem] h-8 bg-gray-400 rounded-md opacity-80 -rotate-90"></div>
+                    <div class="w-[3rem] h-8 bg-gray-400 rounded-md opacity-80 -rotate-90"></div>
+                </div>
+                <div class="relative top-5 bg-green-100 shadow-md rounded-lg mb-6 break-inside-avoid flex flex-col border-2 border-green-300 transform rotate-0 hover:rotate-2 transition-transform duration-300">
+                    <div class="bg-green-200 text-gray-800 p-4 rounded-t-lg border-b-2 border-green-300">
+                    <h3 class="font-bold text-xl mb-2">${name}</h3>
+                    <p class="text-gray-600">${item.fields.time}</p>
+                    </div>
+                    <div class="p-4">
+                    <p class="font-semibold text-lg mb-2">Description</p> 
+                    <p class="text-black mb-2">
+                        <span class="bg-[linear-gradient(to_bottom,transparent_0%,transparent_calc(100%_-_1px),#CDC1FF_calc(100%_-_1px))] bg-[length:100%_1.5rem] pb-1">${description}</span>
+                    </p>
+                    <div class="mt-4">
+                        <p class="text-black font-semibold mb-2">Genre</p>
+                        <p class="text-black mb-2">
+                        <span class="bg-[linear-gradient(to_bottom,transparent_0%,transparent_calc(100%_-_1px),#CDC1FF_calc(100%_-_1px))] bg-[length:100%_1.5rem] pb-1">${genre}</span>
+                        </p>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-black font-semibold mb-2">Price</p>
+                        <p class="text-black mb-2">
+                        <span class="bg-[linear-gradient(to_bottom,transparent_0%,transparent_calc(100%_-_1px),#CDC1FF_calc(100%_-_1px))] bg-[length:100%_1.5rem] pb-1">Rp ${price}</span>
+                        </p>
+                    </div>
+                    </div>
+                </div>
+                <div class="absolute top-0 -right-4 flex space-x-1">
+                    <a href="/edit-product/${item.pk}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    </a>
+                    <a href="/delete/${item.pk}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    </a>
+                </div>
+                </div>
+                `;
+            });
+        }
+    }
+    ```
+
+- - - -
+
+- [x] AJAX `POST`
+
+1. Buat button baru di `main.html` untuk menghandle add product menggunakan AJAX :
+    ```html
+    <button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105" onclick="showModal();">
+        Add New Product by AJAX
+    </button>
+    ```
+
+2. Buat sebuah fungsi di `views.py` untuk menambahkan produk menggunakan AJAX:
+    ```python
+    @csrf_exempt
+    @require_POST
+    def add_product_entry_ajax(request):
+        name = strip_tags(request.POST.get("name"))
+        price = request.POST.get("price")
+        description = strip_tags(request.POST.get("description"))
+        genre = strip_tags(request.POST.get("genre"))
+        user = request.user
+
+        new_product = Product(
+            name = name, price = price, description = description,
+            genre = genre, user = user
+        )
+
+        if (new_product.name!="" or new_product.description!="" or new_product.genre!="") :
+            new_product.save()
+            return HttpResponse(b"CREATED", status=201)
+        return HttpResponse(b"FAILED", status=301)
+    ```
+
+3. Lakukan routing seperti biasa di `urls.py`:
+    ```python
+    from main.views import ... , add_product_entry_ajax
+    urlpatterns = [
+        . . .
+        path('create-ajax', add_product_entry_ajax, name='add_product_entry_ajax'),
+        . . .
+    ]
+    ```
+
+4. Buat sebuah modal untuk menampilkan popup form untuk menambahkan produk di `main.html`:
+    ```html
+    <div id="crudModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto transition-opacity duration-300 ease-out">
+        <div id="crudModalContent" class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
+            <!-- Modal header -->
+            <div class="bg-gray-400 flex items-center justify-between p-4 border-b rounded-t">
+            <h3 class="text-xl font-semibold text-gray-900">
+                Add New Product Entry
+            </h3>
+            <button type="button" class="text-gray-600 bg-transparent hover:bg-red-500 hover:text-white rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="closeModalBtn">
+                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+            </div>
+            <!-- Modal body -->
+            <div class="bg-gray-300 px-6 py-4 space-y-6 form-style">
+            <form id="productEntryForm">
+                <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" id="name" name="name" class="mt-1 block w-full border border-gray-400 rounded-md p-2 hover:border-green-700" placeholder="Enter the game name" required>
+                </div>
+                <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="description" name="description" rows="3" class="mt-1 block w-full h-52 resize-none border border-gray-400 rounded-md p-2 hover:border-green-700" placeholder="Description" required></textarea>
+                </div>
+                <div class="mb-4">
+                <label for="genre" class="block text-sm font-medium text-gray-700">Genre</label>
+                <textarea id="genre" name="genre" rows="3" class="mt-1 block w-full h-52 resize-none border border-gray-400 rounded-md p-2 hover:border-green-700" placeholder="Genre" required></textarea>
+                </div>
+                <div class="mb-4">
+                <label for="price" class="block text-sm font-medium text-gray-700">Price (0-10000000)</label>
+                <input type="price" id="price" name="price" min="0" max="10000000" class="mt-1 block w-full border border-gray-400 rounded-md p-2 hover:border-green-700" required>
+                </div>
+            </form>
+            </div>
+            <!-- Modal footer -->
+            <div class="bg-gray-400 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end">
+            <button type="button" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg" id="cancelButton">Cancel</button>
+            <button type="submit" id="submitProductEntry" form="productEntryForm" class="bg-green-700 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Save</button>
+            </div>
+        </div>
+        </div>
+    ```
+
+5. Tambahkan script javaScript untuk menambahkan produk, menampilkan modal yang telah dibuat, dan meng-*hide* modal:
+    ```javaScript
+    function addProductEntry() {
+        fetch("{% url 'main:add_product_entry_ajax' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#productEntryForm')),
+        })
+        .then(response => {
+            if (response.ok) {
+                refreshProductEntries();
+                hideModal();
+            } else {
+                alert("Gagal submit form, coba lagi.");
+            }
+        })
+
+        document.getElementById("productEntryForm").reset(); 
+
+        return false;
+    }
+    document.getElementById("submitProductEntry").onclick = addProductEntry
+
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModalContent');
+
+    function showModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modal.classList.remove('hidden'); 
+        setTimeout(() => {
+        modalContent.classList.remove('opacity-0', 'scale-95');
+        modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50); 
+    }
+
+    function hideModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+        modal.classList.add('hidden');
+        }, 150); 
+    }
+
+    document.getElementById("cancelButton").addEventListener("click", hideModal);
+    document.getElementById("closeModalBtn").addEventListener("click", hideModal);
+    ```
